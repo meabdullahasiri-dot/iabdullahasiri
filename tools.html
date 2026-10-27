@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>أدوات التقديم | عبدالله عسيري</title>
+<link rel="stylesheet" href="assets/style.css">
+<style>
+.tool-hero{padding:130px 0 30px;text-align:center}
+.tool-hero h1{font-size:clamp(40px,7vw,76px);font-weight:900;line-height:1.1}
+.tool-hero p{color:var(--muted)}
+.ask{display:grid;gap:12px;margin-top:28px}
+.ask .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.field{width:100%;font:inherit;font-size:16px;border:1px solid var(--line);border-radius:18px;padding:12px 18px;background:#fff;box-shadow:var(--shadow);color:var(--ink)}
+textarea.field{min-height:180px;resize:vertical;line-height:1.7}
+.go{justify-self:center}
+.result{display:none;margin-top:40px}
+.result.show{display:block}
+.score{display:flex;align-items:center;gap:28px;flex-wrap:wrap}
+.ring{--v:0;width:150px;height:150px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--c,var(--green)) calc(var(--v)*1%),var(--soft) 0)}
+.ring b{width:120px;height:120px;border-radius:50%;background:#fff;display:grid;place-items:center;font-size:40px;font-weight:900}
+.tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.tag{border-radius:999px;padding:3px 14px;font-size:15px;font-weight:500}
+.tag.ok{background:#e8f6ec;color:#1d7a3a}
+.tag.miss{background:#f1f1f0;color:#555}
+h2.mid{font-size:26px;font-weight:900;margin:34px 0 10px}
+.out{min-height:340px}
+.hint{color:var(--muted);font-size:15px;margin-top:6px}
+.jobs{display:grid;gap:12px}
+.jobcard{display:flex;justify-content:space-between;align-items:center;gap:16px}
+.jobcard h3{font-size:19px;font-weight:700}
+.jobcard p{color:var(--muted);font-size:15px}
+.pct{font-weight:900;font-size:26px;white-space:nowrap}
+.empty{text-align:center;color:var(--muted)}
+@media (max-width:640px){.ask .row{grid-template-columns:1fr}.jobcard{flex-direction:column;align-items:flex-start}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="index.html">عبدالله عسيري<small>أدوات التقديم (صفحة خاصة)</small></a>
+    <a class="cv-btn" href="index.html">الرئيسية</a>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="tool-hero">
+    <p class="hand">الصق الإعلان، وأنا أجهّز الباقي</p>
+    <h1>تجهيز طلب التقديم</h1>
+    <p>الصق نص إعلان الوظيفة من لينكدإن أو جدارات لتعرف نسبة توافقه مع سيرتك، وتحصل على خطاب تقديم جاهز.</p>
+    <form class="ask" id="form">
+      <div class="row">
+        <input class="field" id="title" placeholder="المسمى الوظيفي (مثال: مدير الموارد البشرية)">
+        <input class="field" id="company" placeholder="اسم الجهة (مثال: شركة ...)">
+      </div>
+      <textarea class="field" id="ad" placeholder="الصق نص إعلان الوظيفة كاملاً هنا..." required></textarea>
+      <button class="btn dark go" type="submit">احسب التوافق وجهّز الطلب</button>
+    </form>
+  </section>
+
+  <section class="result" id="result">
+    <div class="card">
+      <div class="score">
+        <div class="ring" id="ring"><b id="pct">0%</b></div>
+        <div>
+          <p id="verdict" style="font-weight:700;font-size:20px"></p>
+          <p id="years" class="hint"></p>
+        </div>
+      </div>
+      <h2 class="mid">متطلبات موجودة في سيرتك</h2>
+      <div class="tags" id="ok"></div>
+      <h2 class="mid">متطلبات غير مذكورة في سيرتك</h2>
+      <div class="tags" id="miss"></div>
+      <p class="hint">إن كنت تملك أياً منها فعلاً، أضفها إلى سيرتك قبل التقديم. لا تضف ما لا تملكه.</p>
+    </div>
+
+    <h2 class="mid">خطاب التقديم</h2>
+    <textarea class="field out" id="letter"></textarea>
+    <div class="btns" style="justify-content:flex-start">
+      <button class="btn dark" data-copy="letter">نسخ الخطاب</button>
+      <a class="btn" href="cv.html" target="_blank">السيرة للطباعة</a>
+      <a class="btn" href="Abdullah-Asiri-CV.docx" download>السيرة Word للرفع</a>
+    </div>
+
+    <h2 class="mid">تحسين أقوى بالذكاء الاصطناعي (مجاني)</h2>
+    <p class="hint">انسخ هذا الطلب والصقه في Claude أو ChatGPT، فيكتب لك خطاباً مخصصاً واقتراحات لتعديل سيرتك حسب هذه الوظيفة.</p>
+    <textarea class="field out" id="prompt" readonly></textarea>
+    <div class="btns" style="justify-content:flex-start">
+      <button class="btn dark" data-copy="prompt">نسخ الطلب</button>
+      <a class="btn" href="https://claude.ai/new" target="_blank" rel="noopener">فتح Claude</a>
+      <a class="btn" href="https://chatgpt.com/" target="_blank" rel="noopener">فتح ChatGPT</a>
+    </div>
+  </section>
+
+  <section id="jobs">
+    <h2 class="big">الوظائف المطابقة</h2>
+    <div class="jobs" id="jobList"><div class="card empty">جارٍ التحميل...</div></div>
+  </section>
+</main>
+<script src="assets/tools.js" defer></script>
+</body>
+</html>
