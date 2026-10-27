@@ -161,3 +161,38 @@ footer .bar{flex-wrap:wrap}
   *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
   .reveal{opacity:1;transform:none}
 }
+
+/* ---------- typography & alignment pass ---------- */
+h1,h2,h3,.title,.statement{text-wrap:balance}
+p,li,dd{text-wrap:pretty}
+.hero h1{line-height:1.12;margin:20px 0 18px}
+.hero h1 .grad{display:inline-block;padding-bottom:.08em}
+.lead{max-width:560px}
+.hero .row{margin-top:30px}
+.stat{display:flex;flex-direction:column;justify-content:space-between;min-height:132px}
+.stat b{direction:ltr;text-align:right;unicode-bidi:isolate}
+section{padding:84px 0}
+.title{margin-bottom:32px}
+.statement{font-size:clamp(22px,2.5vw,30px);font-weight:400;line-height:1.75}
+.statement strong{font-weight:700;color:var(--c1)}
+.about{align-items:center}
+.details dt{font-size:16px;white-space:nowrap}
+.details dd{font-size:16px}
+.skill{display:flex;flex-direction:column}
+.skill h3{line-height:1.4}
+.job{grid-template-columns:150px 1fr;gap:28px;align-items:start;padding:30px 24px}
+.when{display:inline-block;justify-self:start;padding:2px 12px;border-radius:999px;font-size:14px;background:color-mix(in srgb,var(--c1) 10%,transparent);margin-top:8px;white-space:nowrap}
+.job ul{max-width:760px;display:grid;gap:4px}
+.job li{padding-inline-start:4px}
+.edu .card,.grid3.edu>.card{display:flex;flex-direction:column;align-items:flex-start}
+.edu h3{margin:8px 0 14px}
+.edu .pill{margin-top:auto}
+.courses li{align-items:center}
+.courses em{font-size:14px;border:1px solid var(--line);border-radius:999px;padding:1px 12px}
+.cta .lead{max-width:520px}
+footer .bar{align-items:center}
+@media (max-width:900px){
+  .job{grid-template-columns:1fr;gap:10px;padding:24px 4px}
+  .when{margin-top:0}
+  .stat{min-height:112px}
+}
