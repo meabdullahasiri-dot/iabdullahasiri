@@ -196,3 +196,7 @@ footer .bar{align-items:center}
   .when{margin-top:0}
   .stat{min-height:112px}
 }
+
+/* justified Arabic paragraphs (kashida added by assets/kashida.js) */
+.hero .lead,.statement,.job li{text-align:justify;text-align-last:start;text-wrap:wrap}
+.kw{white-space:nowrap}
