@@ -95,17 +95,20 @@
   let mx = innerWidth / 2, my = innerHeight / 2, rx = mx, ry = my;
   addEventListener('mousemove', e => {
     mx = e.clientX; my = e.clientY;
-    dot.style.transform = `translate(${mx}px,${my}px)`;
+    dot.style.transform = `translate3d(${mx}px,${my}px,0)`;
     document.body.classList.add('cursor-on');
+    if (!ringRaf) ringRaf = requestAnimationFrame(loop);
   });
   document.addEventListener('mouseleave', () => document.body.classList.remove('cursor-on'));
   addEventListener('mousedown', () => document.body.classList.add('cursor-down'));
   addEventListener('mouseup', () => document.body.classList.remove('cursor-down'));
-  (function loop() {
-    rx = lerp(rx, mx, 0.18); ry = lerp(ry, my, 0.18);
-    ring.style.transform = `translate(${rx}px,${ry}px)`;
-    requestAnimationFrame(loop);
-  })();
+  // rAF only while the ring is catching up, so an idle page costs nothing
+  let ringRaf = 0;
+  function loop() {
+    rx = lerp(rx, mx, 0.2); ry = lerp(ry, my, 0.2);
+    ring.style.transform = `translate3d(${rx}px,${ry}px,0)`;
+    ringRaf = Math.abs(mx - rx) + Math.abs(my - ry) > 0.3 ? requestAnimationFrame(loop) : 0;
+  }
   $$('a, button, [data-cursor]').forEach(el => {
     el.addEventListener('mouseenter', () => {
       const t = el.dataset.cursor;
@@ -143,23 +146,28 @@
   });
 
   // ---------- spotlight + parallax ----------
-  $$('.hero, .cta .panel').forEach(area => area.addEventListener('mousemove', e => {
-    const r = area.getBoundingClientRect();
-    area.style.setProperty('--x', e.clientX - r.left + 'px');
-    area.style.setProperty('--y', e.clientY - r.top + 'px');
-  }));
+  // spotlight: move a pre-painted gradient layer instead of repainting the background
+  $$('.hero, .cta .panel').forEach(area => {
+    const spot = $('.spot', area);
+    area.addEventListener('mousemove', e => {
+      const r = area.getBoundingClientRect();
+      spot.style.transform = `translate3d(${e.clientX - r.left}px,${e.clientY - r.top}px,0)`;
+    });
+  });
   const hero = $('.hero'), layers = $$('[data-depth]', hero);
   let tx = 0, ty = 0, cx = 0, cy = 0;
-  hero.addEventListener('mousemove', e => {
-    tx = e.clientX / innerWidth - 0.5; ty = e.clientY / innerHeight - 0.5;
-  });
-  hero.addEventListener('mouseleave', () => { tx = ty = 0; });
-  (function para() {
-    cx = lerp(cx, tx, 0.08); cy = lerp(cy, ty, 0.08);
+  let paraRaf = 0;
+  function para() {
+    cx = lerp(cx, tx, 0.1); cy = lerp(cy, ty, 0.1);
     layers.forEach(l => {
       const d = +l.dataset.depth;
-      l.style.translate = `${cx * d}px ${cy * d}px`;
+      l.style.translate = `${(cx * d).toFixed(2)}px ${(cy * d).toFixed(2)}px`;
     });
-    requestAnimationFrame(para);
-  })();
+    paraRaf = Math.abs(tx - cx) + Math.abs(ty - cy) > 0.001 ? requestAnimationFrame(para) : 0;
+  }
+  const kick = () => { if (!paraRaf) paraRaf = requestAnimationFrame(para); };
+  hero.addEventListener('mousemove', e => {
+    tx = e.clientX / innerWidth - 0.5; ty = e.clientY / innerHeight - 0.5; kick();
+  });
+  hero.addEventListener('mouseleave', () => { tx = ty = 0; kick(); });
 })();
