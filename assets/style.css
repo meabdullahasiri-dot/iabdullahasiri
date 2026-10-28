@@ -200,3 +200,4 @@ footer .bar{align-items:center}
 /* justified Arabic paragraphs (kashida added by assets/kashida.js) */
 .hero .lead,.statement,.job li{text-align:justify;text-align-last:start;text-wrap:wrap}
 .kw{white-space:nowrap}
+.quiet{color:inherit;text-decoration:none;cursor:default}
