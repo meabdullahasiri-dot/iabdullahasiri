@@ -48,3 +48,12 @@ textarea.field{min-height:170px;resize:vertical;line-height:1.8}
   .jobcard .acts{grid-column:1/-1;justify-content:flex-start}
   .ask .row-in,.row-in{grid-template-columns:1fr}
 }
+.jobcard .about{display:block;grid-column:1/-1;border-top:1px solid var(--line);padding-top:14px;margin-top:2px}
+.about dl{display:grid;gap:10px}
+.about dl div{display:grid;grid-template-columns:120px 1fr;gap:12px}
+.about dt{color:var(--muted);font-size:15px}
+.about dd{font-size:16px;line-height:1.8}
+.about a{color:var(--c1);font-weight:500}
+.about .links{margin-top:10px;font-size:15px;color:var(--muted)}
+@media (max-width:700px){.about dl div{grid-template-columns:1fr;gap:2px}}
+.jobcard .about[hidden]{display:none}

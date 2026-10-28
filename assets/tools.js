@@ -165,10 +165,12 @@ function render() {
       <span class="match ${cls}">${j.pct}%</span>
       <div><h3>${esc(j.title)}</h3><p>${meta}</p></div>
       <div class="acts">
+        <button class="btn ghost" data-act="about" type="button" aria-expanded="false">عن الجهة</button>
         <button class="btn solid" data-act="prep" type="button">جهّز الطلب</button>
         <a class="btn ghost" data-act="go" href="${esc(j.url)}" target="_blank" rel="noopener">قدّم الآن</a>
         <label class="done"><input type="checkbox" data-act="done"${applied.has(j.id) ? ' checked' : ''}>قدّمت</label>
-      </div></article>`;
+      </div>
+      <div class="about" hidden></div></article>`;
   }).join('');
 }
 
@@ -176,6 +178,12 @@ $('jobList').addEventListener('click', e => {
   const el = e.target.closest('[data-act]');
   if (!el) return;
   const card = el.closest('.jobcard'), job = jobs.find(j => j.id === card.dataset.id);
+  if (el.dataset.act === 'about') {
+    const panel = card.querySelector('.about'), open = panel.hidden;
+    panel.hidden = !open; el.setAttribute('aria-expanded', open);
+    if (open && !panel.dataset.loaded) { panel.dataset.loaded = 1; showEmployer(panel, job); }
+    return;
+  }
   if (el.dataset.act === 'prep') {
     $('title').value = job.title; $('company').value = job.company || '';
     $('jobUrl').value = job.url || '';
@@ -195,6 +203,54 @@ document.querySelectorAll('.chip-btn').forEach(b => b.addEventListener('click', 
   document.querySelectorAll('.chip-btn').forEach(x => x.classList.toggle('on', x === b));
   filter = b.dataset.filter; render();
 }));
+
+// ---------- employer details ----------
+// Alerts carry only the company name and city, so the brief and official website come from
+// Wikipedia/Wikidata when the company has an article (larger employers); otherwise we show
+// quick links to look it up. Results are cached per company in this browser.
+const normName = s => String(s || '').toLowerCase()
+  .replace(/\b(co|company|ltd|llc|inc|group|holding|est)\b\.?|شركة|مؤسسة|مجموعة|المحدودة|القابضة/g, '')
+  .replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
+
+async function wikiLookup(company) {
+  const cache = store.get('employers', {});
+  if (company in cache) return cache[company];
+  const want = normName(company);
+  let found = null;
+  for (const lang of ['ar', 'en']) {
+    try {
+      const q = `https://${lang}.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(company)}&gsrlimit=1&prop=extracts|pageprops|info&inprop=url&exintro=1&explaintext=1&exsentences=3&format=json&origin=*`;
+      const page = Object.values((await (await fetch(q)).json()).query?.pages || {})[0];
+      const got = normName(page?.title);
+      // accept only an article whose title is clearly this company, not a namesake word
+      if (!page || !got || !(got === want || (want.length > 3 && (got.includes(want) || want.includes(got)) && Math.min(got.length, want.length) / Math.max(got.length, want.length) > 0.5))) continue;
+      found = { brief: page.extract || '', wiki: page.fullurl, site: '' };
+      const qid = page.pageprops?.wikibase_item;
+      if (qid) {
+        const w = await (await fetch(`https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=${qid}&property=P856&format=json&origin=*`)).json();
+        found.site = w.claims?.P856?.[0]?.mainsnak?.datavalue?.value || '';
+      }
+      break;
+    } catch (e) { /* offline or blocked: fall back to links */ }
+  }
+  cache[company] = found;
+  store.set('employers', cache);
+  return found;
+}
+
+async function showEmployer(panel, job) {
+  const name = job.company || '';
+  const q = encodeURIComponent(name);
+  const where = job.location ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(job.location)}" target="_blank" rel="noopener">${esc(job.location)} ↗</a>` : 'غير مذكور في التنبيه';
+  const row = (k, v) => `<div><dt>${k}</dt><dd>${v}</dd></div>`;
+  panel.innerHTML = `<dl>${row('الجهة', esc(name) || 'غير مذكورة')}${row('موقع الوظيفة', where)}${row('الموقع الإلكتروني', '<span class="hint">جارٍ البحث...</span>')}${row('نبذة', '<span class="hint">جارٍ البحث...</span>')}</dl>`;
+  const info = name ? await wikiLookup(name) : null;
+  const search = `<a href="https://www.google.com/search?q=${q}+%D8%A7%D9%84%D9%85%D9%88%D9%82%D8%B9+%D8%A7%D9%84%D8%B1%D8%B3%D9%85%D9%8A" target="_blank" rel="noopener">ابحث عن الموقع الرسمي ↗</a>`;
+  const li = `<a href="https://www.linkedin.com/search/results/companies/?keywords=${q}" target="_blank" rel="noopener">صفحة الجهة في لينكدإن ↗</a>`;
+  const site = info?.site ? `<a href="${esc(info.site)}" target="_blank" rel="noopener">${esc(info.site.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, ''))} ↗</a>` : search;
+  const brief = info?.brief ? `<span dir="auto">${esc(info.brief)}</span> <a href="${esc(info.wiki)}" target="_blank" rel="noopener">(ويكيبيديا)</a>` : `<span class="hint">لا تتوفر نبذة تلقائية عن هذه الجهة.</span> ${li}`;
+  panel.innerHTML = `<dl>${row('الجهة', esc(name) || 'غير مذكورة')}${row('موقع الوظيفة', where)}${row('الموقع الإلكتروني', site)}${row('نبذة', brief)}</dl><p class="links">${li} · <a href="${esc(job.url)}" target="_blank" rel="noopener">إعلان الوظيفة ↗</a></p>`;
+}
 
 $('feedUrl').value = store.get('feedUrl', '');
 $('saveFeed').addEventListener('click', () => {
