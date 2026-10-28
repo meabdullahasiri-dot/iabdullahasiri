@@ -1,0 +1,50 @@
+.tool-sec{padding:56px 0}
+#jobs{padding-top:60px}
+.tool-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.tool-head .title{margin-bottom:12px}
+.filters{display:flex;gap:8px;margin-bottom:18px}
+.chip-btn{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 16px;font-size:15px;font-weight:700;cursor:pointer;transition:border-color .25s,background .25s,color .25s}
+.chip-btn.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.tool-sec .lead{margin-bottom:26px;max-width:760px}
+.jobs-list{display:grid;gap:12px}
+.jobcard{display:grid;grid-template-columns:auto 1fr auto;gap:18px;align-items:center;padding:20px 22px}
+.jobcard.applied{opacity:.6}
+.match{width:62px;height:62px;border-radius:16px;display:grid;place-items:center;font-weight:700;font-size:17px;color:var(--c1);background:color-mix(in srgb,var(--c1) 12%,transparent)}
+.match.hi{color:#15803d;background:color-mix(in srgb,#16a34a 14%,transparent)}
+.match.lo{color:var(--muted);background:var(--surface-2)}
+.jobcard h3{font-size:19px;font-weight:700;line-height:1.45}
+.jobcard p{color:var(--muted);font-size:15px}
+.jobcard .acts{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.jobcard .btn{padding:9px 16px;font-size:15px}
+.done{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--muted);cursor:pointer;white-space:nowrap}
+.done input{accent-color:var(--c1);width:16px;height:16px}
+.empty{text-align:center;color:var(--muted);line-height:1.9}
+.settings{margin-top:22px;padding:18px 22px}
+.settings summary{cursor:pointer;font-weight:700}
+.settings .hint{margin:10px 0}
+.row-in{display:grid;grid-template-columns:1fr auto;gap:10px}
+.ask .row-in{grid-template-columns:1fr 1fr}
+.ask{display:grid;gap:12px;padding:22px}
+.ask .btn{justify-self:start}
+.field{width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:12px 16px;transition:border-color .25s}
+.field:focus{outline:none;border-color:var(--c1)}
+textarea.field{min-height:170px;resize:vertical;line-height:1.8}
+.out{min-height:300px}
+.result{display:none;margin-top:28px}
+.result.show{display:block}
+.score{display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+.ring{--v:0;width:130px;height:130px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--c,var(--c1)) calc(var(--v)*1%),var(--surface-2) 0)}
+.ring b{width:104px;height:104px;border-radius:50%;background:var(--surface);display:grid;place-items:center;font-size:32px;font-weight:700}
+.verdict{font-weight:700;font-size:20px}
+.mid{font-size:20px;font-weight:700;margin:26px 0 10px}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{border-radius:999px;padding:3px 14px;font-size:15px;font-weight:500}
+.tag.ok{background:color-mix(in srgb,#16a34a 14%,transparent);color:#15803d}
+[data-theme="dark"] .tag.ok{color:#4ade80}
+.tag.miss{background:var(--surface-2);color:var(--muted)}
+.hint{color:var(--muted);font-size:15px;margin-top:8px}
+@media (max-width:700px){
+  .jobcard{grid-template-columns:auto 1fr}
+  .jobcard .acts{grid-column:1/-1;justify-content:flex-start}
+  .ask .row-in,.row-in{grid-template-columns:1fr}
+}

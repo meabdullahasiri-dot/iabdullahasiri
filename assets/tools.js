@@ -111,6 +111,8 @@ ${cvText || '(افتح الصفحة من الموقع المنشور ليُضا�
 === إعلان الوظيفة ===
 ${ad}`;
 
+  const link = $('applyNow'), u = $('jobUrl').value;
+  link.hidden = !u; if (u) link.href = u;
   $('result').classList.add('show');
   $('result').scrollIntoView({ behavior: 'smooth' });
 });
@@ -121,18 +123,92 @@ document.querySelectorAll('[data-copy]').forEach(b => b.addEventListener('click'
   const t = b.textContent; b.textContent = 'تم النسخ ✓'; setTimeout(() => b.textContent = t, 1500);
 }));
 
-// ---------- matched jobs (jobs.json is written by the Google Apps Script in the next phase) ----------
+// ---------- theme ----------
+document.querySelector('.theme-btn').addEventListener('click', () => {
+  const root = document.documentElement, next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+  root.dataset.theme = next;
+  try { localStorage.setItem('theme', next); } catch (e) {}
+});
+
+// ---------- job feed ----------
+// Jobs come from the Google Apps Script web app (apps-script/Code.gs) when its URL is
+// saved below, otherwise from jobs.json. "Applied" marks are kept in this browser only.
+const store = {
+  get(k, d) { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
+};
 const esc = s => String(s || '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-fetch('jobs.json', { cache: 'no-store' }).then(r => r.ok ? r.json() : []).catch(() => []).then(jobs => {
+// title words that mark a role as relevant even when the alert carries no description
+const RELEVANT = /موارد بشري|الموارد البشري|شؤون الموظفين|الأفراد|التوظيف|استقطاب|مشاريع|مشروع|تطوير مؤسسي|التطوير المؤسسي|إدار|human resources|\bhr\b|people|talent|recruit|personnel|project|pmo|admin|organizational/i;
+let jobs = [], filter = 'open';
+const applied = new Set(store.get('applied', []));
+
+function score(j) {
+  const r = analyse(`${j.title} ${j.text || ''}`);
+  return Math.min(100, (RELEVANT.test(j.title) ? 55 : 15) + Math.round(r.pct * 0.45));
+}
+
+function render() {
   const list = $('jobList');
+  const shown = jobs.filter(j => filter === 'all' || (filter === 'applied') === applied.has(j.id));
   if (!jobs.length) {
-    list.innerHTML = '<div class="card empty">لا توجد وظائف بعد. ستظهر هنا تلقائياً بعد ربط تنبيهات لينكدإن وجدارات (المرحلة القادمة).</div>';
+    list.innerHTML = `<div class="card empty">لا توجد وظائف بعد.<br>بعد إعداد مصدر الوظائف (الخطوات في رسالة Claude)، ستظهر هنا تلقائياً من تنبيهات لينكدإن وجدارات.<br>وحتى ذلك الحين، الصق أي إعلان في قسم <a href="#apply"><b>تجهيز الطلب</b></a>.</div>`;
     return;
   }
-  list.innerHTML = jobs
-    .map(j => ({ ...j, pct: analyse(`${j.title} ${j.text || ''}`).pct }))
-    .sort((a, b) => b.pct - a.pct)
-    .map(j => `<div class="card jobcard"><div><h3>${esc(j.title)}</h3><p>${esc(j.company)} · ${esc(j.source)} · ${esc(j.date)}</p></div>
-      <div style="display:flex;gap:12px;align-items:center"><span class="pct">${j.pct}%</span>
-      <a class="btn" href="${esc(j.url)}" target="_blank" rel="noopener">الإعلان</a></div></div>`).join('');
+  if (!shown.length) { list.innerHTML = '<div class="card empty">لا توجد وظائف في هذا التصنيف.</div>'; return; }
+  list.innerHTML = shown.map(j => {
+    const cls = j.pct >= 70 ? 'hi' : j.pct >= 45 ? '' : 'lo';
+    const meta = [j.company, j.location, j.source, j.date].filter(Boolean).map(esc).join(' · ');
+    return `<article class="card jobcard${applied.has(j.id) ? ' applied' : ''}" data-id="${esc(j.id)}">
+      <span class="match ${cls}">${j.pct}%</span>
+      <div><h3>${esc(j.title)}</h3><p>${meta}</p></div>
+      <div class="acts">
+        <button class="btn solid" data-act="prep" type="button">جهّز الطلب</button>
+        <a class="btn ghost" data-act="go" href="${esc(j.url)}" target="_blank" rel="noopener">قدّم الآن</a>
+        <label class="done"><input type="checkbox" data-act="done"${applied.has(j.id) ? ' checked' : ''}>قدّمت</label>
+      </div></article>`;
+  }).join('');
+}
+
+$('jobList').addEventListener('click', e => {
+  const el = e.target.closest('[data-act]');
+  if (!el) return;
+  const card = el.closest('.jobcard'), job = jobs.find(j => j.id === card.dataset.id);
+  if (el.dataset.act === 'prep') {
+    $('title').value = job.title; $('company').value = job.company || '';
+    $('jobUrl').value = job.url || '';
+    $('ad').value = `${job.title}\n${job.company || ''} · ${job.location || ''}\n\n(افتح الإعلان من زر "قدّم الآن"، وانسخ وصف الوظيفة كاملاً والصقه هنا بدلاً من هذا السطر للحصول على نتيجة أدق.)`;
+    $('apply').scrollIntoView({ behavior: 'smooth' });
+    $('form').requestSubmit();
+  }
 });
+$('jobList').addEventListener('change', e => {
+  if (e.target.dataset.act !== 'done') return;
+  const id = e.target.closest('.jobcard').dataset.id;
+  e.target.checked ? applied.add(id) : applied.delete(id);
+  store.set('applied', [...applied]);
+  render();
+});
+document.querySelectorAll('.chip-btn').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('.chip-btn').forEach(x => x.classList.toggle('on', x === b));
+  filter = b.dataset.filter; render();
+}));
+
+$('feedUrl').value = store.get('feedUrl', '');
+$('saveFeed').addEventListener('click', () => {
+  store.set('feedUrl', $('feedUrl').value.trim());
+  load();
+});
+if (!store.get('feedUrl', '')) $('settings').open = true;
+
+function load() {
+  const url = store.get('feedUrl', '') || 'jobs.json';
+  $('jobList').innerHTML = '<div class="card empty">جارٍ التحميل...</div>';
+  fetch(url, { cache: 'no-store' }).then(r => r.ok ? r.json() : []).catch(() => []).then(data => {
+    jobs = (Array.isArray(data) ? data : []).filter(j => j && j.title)
+      .map(j => ({ ...j, id: String(j.id || j.url || j.title), pct: score(j) }))
+      .sort((a, b) => b.pct - a.pct || String(b.date).localeCompare(String(a.date)));
+    render();
+  });
+}
+load();
