@@ -140,6 +140,8 @@ const store = {
 const esc = s => String(s || '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 // title words that mark a role as relevant even when the alert carries no description
 const RELEVANT = /موارد بشري|الموارد البشري|شؤون الموظفين|الأفراد|التوظيف|استقطاب|مشاريع|مشروع|تطوير مؤسسي|التطوير المؤسسي|تميز مؤسسي|التميز المؤسسي|إدار|سياسات|إجراءات|حوكمة|جودة|عمليات|مكتب|human resources|\bhr\b|people|talent|recruit|personnel|employee relations|project|pmo|admin|office manager|organizational|institutional|excellence|governance|quality|polic|process|operations/i;
+// alert-email note lines that are not job details (also filtered in apps-script/Code.gs)
+const NOISE = /تقديم الطلب|تقوم بالتوظيف|توظف بنشاط|خريج|زملاء|مروّج|Easy Apply|actively (hiring|recruiting)|alumni|connection|Promoted/i;
 let jobs = [], filter = 'open';
 const applied = new Set(store.get('applied', []));
 
@@ -205,7 +207,8 @@ function load() {
   const url = store.get('feedUrl', '') || 'jobs.json';
   $('jobList').innerHTML = '<div class="card empty">جارٍ التحميل...</div>';
   fetch(url, { cache: 'no-store' }).then(r => r.ok ? r.json() : []).catch(() => []).then(data => {
-    jobs = (Array.isArray(data) ? data : []).filter(j => j && j.title)
+    jobs = (Array.isArray(data) ? data : []).filter(j => j && j.title && !NOISE.test(j.title))
+      .map(j => ({ ...j, location: NOISE.test(j.location || '') ? '' : j.location }))
       .map(j => ({ ...j, id: String(j.id || j.url || j.title), pct: score(j) }))
       .sort((a, b) => b.pct - a.pct || String(b.date).localeCompare(String(a.date)));
     render();

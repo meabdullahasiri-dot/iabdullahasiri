@@ -51,9 +51,12 @@ function collectJobs() {
 }
 
 /**
- * Alert emails list each job as a few short lines (title, company, location)
- * followed by its link. We take the link and the non-empty lines just above it.
+ * Alert emails list each job as a few short lines (title, company, location),
+ * sometimes followed by notes such as "Easy Apply" or "actively hiring", then its link.
+ * We take the link, drop those note lines, and read the three lines just above it.
  */
+const NOISE = /تقديم الطلب|تقدّم بسهولة|التقديم السهل|تقوم بالتوظيف|توظف بنشاط|خريج|خريجي|زميل|زملاء|علاقات|جهة اتصال|مروّج|مُروَّج|ممول|Easy Apply|Apply with|actively (hiring|recruiting)|alumni|connection|Promoted|Be an early applicant|applicants?\b|عرض الوظيفة|View job|See all jobs|^\d+\s*(ر\.س|SAR|\$)/i;
+
 function parse_(body, source) {
   const lines = body.split(/\r?\n/).map(l => l.trim());
   const jobs = [];
@@ -63,9 +66,10 @@ function parse_(body, source) {
     const url = m[1].replace(/[)>\]]+$/, '');
     const id = m[2] ? 'li-' + m[2] : 'jd-' + url.replace(/[?#].*$/, '');
     const above = [];
-    for (let j = i - 1; j >= 0 && above.length < 3; j--) {
-      const t = lines[j].replace(/^View job:?$/i, '').trim();
-      if (!t || /^https?:/i.test(t) || /^-+$/.test(t)) { if (above.length) break; continue; }
+    for (let j = i - 1; j >= 0 && above.length < 3 && i - j <= 10; j--) {
+      const t = lines[j].replace(/^(View job|عرض الوظيفة):?\s*/i, '').trim();
+      if (/^https?:/i.test(t) || /^-{3,}$/.test(t)) { if (above.length) break; continue; }
+      if (!t || NOISE.test(t)) continue;
       above.unshift(t);
     }
     if (!above.length) return;
@@ -73,6 +77,13 @@ function parse_(body, source) {
     jobs.push({ id, title: above[0], company: above[1] || '', location: above[2] || '', url: m[2] ? clean : url });
   });
   return jobs;
+}
+
+/** Clears the sheet and re-reads the alert emails (run after changing the parser). */
+function rebuild() {
+  const sh = sheet_();
+  if (sh.getLastRow() > 1) sh.deleteRows(2, sh.getLastRow() - 1);
+  collectJobs();
 }
 
 function doGet() {
