@@ -139,7 +139,7 @@ const store = {
 };
 const esc = s => String(s || '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 // title words that mark a role as relevant even when the alert carries no description
-const RELEVANT = /موارد بشري|الموارد البشري|شؤون الموظفين|الأفراد|التوظيف|استقطاب|مشاريع|مشروع|تطوير مؤسسي|التطوير المؤسسي|إدار|human resources|\bhr\b|people|talent|recruit|personnel|project|pmo|admin|organizational/i;
+const RELEVANT = /موارد بشري|الموارد البشري|شؤون الموظفين|الأفراد|التوظيف|استقطاب|مشاريع|مشروع|تطوير مؤسسي|التطوير المؤسسي|تميز مؤسسي|التميز المؤسسي|إدار|سياسات|إجراءات|حوكمة|جودة|عمليات|مكتب|human resources|\bhr\b|people|talent|recruit|personnel|employee relations|project|pmo|admin|office manager|organizational|institutional|excellence|governance|quality|polic|process|operations/i;
 let jobs = [], filter = 'open';
 const applied = new Set(store.get('applied', []));
 
