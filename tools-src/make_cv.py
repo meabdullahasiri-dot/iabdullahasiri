@@ -41,16 +41,30 @@ CV = {
   'certs': [('مدير مشاريع معتمد (PMP)، معهد إدارة المشاريع PMI', '2025')],
   'courses': [('التخطيط الاستراتيجي في إدارة الموارد البشرية', '2024'), ('تحليل البيانات باستخدام Power BI', '2024'),
               ('مهارات تحليل البيانات باستخدام Excel', '2024'), ('خبير التطوير المؤسسي', '2021')],
-  'skills': ['إدارة الموارد البشرية', 'إعداد السياسات واللوائح والإجراءات',
-             'نظام العمل السعودي والأنظمة الحكومية', 'إجراءات الموظفين على المنصات الحكومية: قوى، ومُدد، والتأمينات الاجتماعية، ومقيم، وأبشر أعمال', 'إدارة المشاريع (PMP)', 'التطوير المؤسسي', 'أتمتة العمليات',
-             'التخطيط التشغيلي', 'تحليل البيانات: Excel وPower BI', 'إعداد التقارير', 'قيادة الفرق', 'التواصل وبناء العلاقات المهنية'],
+  'skills': ['إدارة الموارد البشرية',
+             'عمليات الموارد البشرية',
+             'إعداد السياسات واللوائح والإجراءات',
+             'نظام العمل السعودي والأنظمة الحكومية',
+             'إجراءات الموظفين على المنصات الحكومية: قوى، ومُدد، والتأمينات الاجتماعية، ومقيم، وأبشر أعمال',
+             'إدارة المشاريع (PMP)',
+             'التطوير المؤسسي',
+             'أتمتة العمليات',
+             'استخدام أدوات الذكاء الاصطناعي',
+             'إعداد مؤشرات الأداء (KPIs)',
+             'التخطيط التشغيلي',
+             'تحليل البيانات: Excel وPower BI',
+             'برامج Microsoft Office: Excel وWord وPowerPoint',
+             'إعداد التقارير',
+             'قيادة الفرق',
+             'التواصل وبناء العلاقات المهنية',
+             'العمل عن بُعد'],
   'languages': 'العربية: اللغة الأم | الإنجليزية: مستوى جيد',
 }
 
 doc = Document()
 sec = doc.sections[0]
 sec.page_width, sec.page_height = Cm(21), Cm(29.7)
-sec.left_margin = sec.right_margin = Cm(1.6); sec.top_margin = sec.bottom_margin = Cm(1.1)
+sec.left_margin = sec.right_margin = Cm(1.6); sec.top_margin = sec.bottom_margin = Cm(0.9)
 TEXT_W = Cm(21 - 3.2)
 sec._sectPr.append(OxmlElement('w:bidi'))
 cp = doc.core_properties
@@ -77,7 +91,7 @@ def para(text='', size=10.5, bold=False, color=None, style=None, align=WD_ALIGN_
     return p
 
 def heading(text):
-    p = para(style='Heading 1', after=2, before=6)
+    p = para(style='Heading 1', after=2, before=5)
     fmt(p.add_run(text), 11.5, True, ACCENT)
     # thin rule under each section heading
     b = OxmlElement('w:pBdr'); bt = OxmlElement('w:bottom')
@@ -117,7 +131,7 @@ heading('الدورات التدريبية')
 for t, d in CV['courses']: line(t, d, bold=False, size=10)
 heading('المهارات')
 para(' • '.join(CV['skills']), 10, align=WD_ALIGN_PARAGRAPH.RIGHT)
-heading('اللغات'); para(CV['languages'])
+para('اللغات: ' + CV['languages'], 10, after=0, before=3)  # kept under skills to stay on one page
 
 docx_path = out / 'cv-ats.docx'
 doc.save(docx_path)

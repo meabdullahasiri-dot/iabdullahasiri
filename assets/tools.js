@@ -1,7 +1,7 @@
 // Job-ad matching against the CV, cover-letter draft, AI prompt, and matched-jobs list.
 // `has` marks skills stated in the CV; the rest are surfaced as gaps, never claimed.
 const SKILLS = [
-  { k: 'إدارة الموارد البشرية', has: true, syn: ['الموارد البشرية', 'موارد بشرية', 'human resources', 'hr manager', 'hr'] },
+  { k: 'إدارة الموارد البشرية', has: true, syn: ['الموارد البشرية', 'موارد بشرية', 'human resources', 'hr manager', 'hr', 'hr operations'] },
   { k: 'السياسات واللوائح والإجراءات', has: true, syn: ['سياسات', 'لوائح', 'اللائحة', 'إجراءات', 'policies', 'procedures'] },
   { k: 'نظام العمل السعودي', has: true, syn: ['نظام العمل', 'قانون العمل', 'labor law', 'labour law', 'saudi labor'] },
   { k: 'التخطيط الاستراتيجي', has: false, syn: ['استراتيجي', 'استراتيجية', 'strategic', 'strategy'] },
@@ -10,7 +10,10 @@ const SKILLS = [
   { k: 'التطوير المؤسسي', has: true, syn: ['التطوير المؤسسي', 'التطوير التنظيمي', 'organizational development', 'organisational development', 'التميز المؤسسي'] },
   { k: 'أتمتة العمليات', has: true, syn: ['أتمتة', 'التحول الرقمي', 'automation', 'digital transformation'] },
   { k: 'تحليل البيانات Power BI', has: true, syn: ['power bi', 'powerbi', 'باور بي'] },
-  { k: 'Excel', has: true, syn: ['excel', 'إكسل', 'اكسل', 'microsoft office', 'ms office'] },
+  { k: 'Excel', has: true, syn: ['excel', 'إكسل', 'اكسل', 'microsoft office', 'ms office', 'word', 'powerpoint', 'وورد', 'بوربوينت', 'باوربوينت'] },
+  { k: 'أدوات الذكاء الاصطناعي', has: true, syn: ['ذكاء اصطناعي', 'الذكاء الاصطناعي', 'artificial intelligence', 'chatgpt', 'ai tools', 'generative ai'] },
+  { k: 'مؤشرات الأداء KPIs', has: true, syn: ['مؤشرات الأداء', 'مؤشرات اداء', 'kpi'] },
+  { k: 'العمل عن بُعد', has: true, syn: ['عن بعد', 'عن بُعد', 'remote'] },
   { k: 'إعداد التقارير', has: true, syn: ['تقارير', 'التقارير', 'reporting', 'reports'] },
   { k: 'قيادة الفرق', has: true, syn: ['قيادة', 'إدارة فريق', 'إدارة الفريق', 'leadership', 'team management', 'lead a team'] },
   { k: 'التواصل وبناء العلاقات', has: true, syn: ['تواصل', 'التواصل', 'علاقات', 'communication', 'stakeholder'] },
@@ -23,7 +26,7 @@ const SKILLS = [
   { k: 'القطاع غير الربحي', has: true, syn: ['غير ربحي', 'جمعية', 'non-profit', 'nonprofit', 'ngo'] },
   { k: 'القطاع الحكومي', has: true, syn: ['حكومي', 'حكومية', 'government', 'public sector'] },
   { k: 'الإنجليزية', has: true, syn: ['الإنجليزية', 'الانجليزية', 'english'] },
-  { k: 'تقييم الأداء', has: false, syn: ['تقييم الأداء', 'إدارة الأداء', 'مؤشرات الأداء', 'performance', 'kpi'] },
+  { k: 'تقييم الأداء', has: false, syn: ['تقييم الأداء', 'إدارة الأداء', 'performance appraisal', 'performance management'] },
   { k: 'الرواتب والأجور', has: false, syn: ['رواتب', 'الرواتب', 'الأجور', 'مسير', 'payroll', 'compensation'] },
   { k: 'التدريب والتطوير', has: false, syn: ['التدريب والتطوير', 'تطوير الموظفين', 'training', 'learning and development', 'l&d'] },
   { k: 'منصة قوى', has: true, syn: ['منصة قوى', 'نظام قوى', 'qiwa'] },
