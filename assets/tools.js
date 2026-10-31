@@ -4,7 +4,7 @@ const SKILLS = [
   { k: 'إدارة الموارد البشرية', has: true, syn: ['الموارد البشرية', 'موارد بشرية', 'human resources', 'hr manager', 'hr'] },
   { k: 'السياسات واللوائح والإجراءات', has: true, syn: ['سياسات', 'لوائح', 'اللائحة', 'إجراءات', 'policies', 'procedures'] },
   { k: 'نظام العمل السعودي', has: true, syn: ['نظام العمل', 'قانون العمل', 'labor law', 'labour law', 'saudi labor'] },
-  { k: 'التخطيط الاستراتيجي', has: true, syn: ['استراتيجي', 'استراتيجية', 'strategic', 'strategy'] },
+  { k: 'التخطيط الاستراتيجي', has: false, syn: ['استراتيجي', 'استراتيجية', 'strategic', 'strategy'] },
   { k: 'التخطيط التشغيلي', has: true, syn: ['تشغيلي', 'تشغيلية', 'operational'] },
   { k: 'إدارة المشاريع PMP', has: true, syn: ['pmp', 'إدارة المشاريع', 'مدير مشاريع', 'مدير مشروع', 'project manag'] },
   { k: 'التطوير المؤسسي', has: true, syn: ['التطوير المؤسسي', 'التطوير التنظيمي', 'organizational development', 'organisational development', 'التميز المؤسسي'] },
