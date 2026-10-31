@@ -11,7 +11,7 @@ const SKILLS = [
   { k: 'أتمتة العمليات', has: true, syn: ['أتمتة', 'التحول الرقمي', 'automation', 'digital transformation'] },
   { k: 'تحليل البيانات Power BI', has: true, syn: ['power bi', 'powerbi', 'باور بي'] },
   { k: 'Excel', has: true, syn: ['excel', 'إكسل', 'اكسل', 'microsoft office', 'ms office', 'word', 'powerpoint', 'وورد', 'بوربوينت', 'باوربوينت'] },
-  { k: 'أدوات الذكاء الاصطناعي', has: true, syn: ['ذكاء اصطناعي', 'الذكاء الاصطناعي', 'artificial intelligence', 'chatgpt', 'ai tools', 'generative ai'] },
+  { k: 'أدوات الذكاء الاصطناعي', has: true, syn: ['ذكاء اصطناعي', 'الذكاء الاصطناعي', 'artificial intelligence', 'chatgpt', 'claude', 'ai tools', 'generative ai'] },
   { k: 'مؤشرات الأداء KPIs', has: true, syn: ['مؤشرات الأداء', 'مؤشرات اداء', 'kpi'] },
   { k: 'العمل عن بُعد', has: true, syn: ['عن بعد', 'عن بُعد', 'remote'] },
   { k: 'إعداد التقارير', has: true, syn: ['تقارير', 'التقارير', 'reporting', 'reports'] },
