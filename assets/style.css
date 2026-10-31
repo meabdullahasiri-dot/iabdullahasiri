@@ -201,3 +201,7 @@ footer .bar{align-items:center}
 .hero .lead,.statement,.job li{text-align:justify;text-align-last:start;text-wrap:wrap}
 .kw{white-space:nowrap}
 .quiet{color:inherit;text-decoration:none;cursor:default}
+.wins{margin-top:28px}
+.wins h3{font-size:20px;font-weight:700;margin-bottom:10px}
+.wins ul{padding-inline-start:20px;display:grid;gap:6px}
+.wins li::marker{color:var(--c1)}
