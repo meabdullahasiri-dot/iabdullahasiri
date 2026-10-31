@@ -211,3 +211,20 @@ footer .bar{align-items:center}
 .lv{font-style:normal;font-size:13px;font-weight:700;border-radius:999px;padding:2px 12px;white-space:nowrap}
 .lv.adv{color:var(--c1);background:color-mix(in srgb,var(--c1) 12%,transparent)}
 .lv.mid{color:var(--muted);background:var(--surface-2)}
+
+/* portfolio */
+.works{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+.work{display:grid;grid-template-columns:200px 1fr;gap:24px;align-items:stretch;padding:20px}
+.work .thumb{border-radius:16px;background:linear-gradient(135deg,#8b5cf6,#3b82f6);display:grid;place-items:center;min-height:170px}
+.work .thumb span{color:#fff;font-size:44px;font-weight:700}
+.work .body{display:flex;flex-direction:column;gap:8px}
+.work .pill{align-self:flex-start}
+.work h3{font-size:24px;font-weight:700}
+.work p{color:var(--muted);font-size:16px;line-height:1.8}
+.work .foot{display:flex;align-items:center;gap:12px;margin-top:auto;flex-wrap:wrap}
+.work .foot small{color:var(--muted);font-size:13px}
+@media (max-width:900px){.works{grid-template-columns:1fr}}
+@media (max-width:520px){.work{grid-template-columns:1fr}.work .thumb{min-height:120px}}
+.works:has(> .work:only-child){grid-template-columns:1fr}
+.work:only-child{grid-template-columns:280px 1fr}
+@media (max-width:520px){.work:only-child{grid-template-columns:1fr}}
