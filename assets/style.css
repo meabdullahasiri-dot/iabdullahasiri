@@ -205,3 +205,9 @@ footer .bar{align-items:center}
 .wins h3{font-size:20px;font-weight:700;margin-bottom:10px}
 .wins ul{padding-inline-start:20px;display:grid;gap:6px}
 .wins li::marker{color:var(--c1)}
+.skill ul.levels{display:grid;gap:0}
+.skill ul.levels li{display:flex;justify-content:space-between;align-items:center;gap:12px;border:0;border-bottom:1px solid var(--line);background:none;border-radius:0;padding:9px 0;font-size:16px}
+.skill ul.levels li:last-child{border-bottom:0}
+.lv{font-style:normal;font-size:13px;font-weight:700;border-radius:999px;padding:2px 12px;white-space:nowrap}
+.lv.adv{color:var(--c1);background:color-mix(in srgb,var(--c1) 12%,transparent)}
+.lv.mid{color:var(--muted);background:var(--surface-2)}
