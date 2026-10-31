@@ -25,7 +25,7 @@ const SKILLS = [
   { k: 'بكالوريوس إدارة الأعمال', has: true, syn: ['بكالوريوس', 'bachelor', 'إدارة أعمال', 'business administration'] },
   { k: 'القطاع غير الربحي', has: true, syn: ['غير ربحي', 'جمعية', 'non-profit', 'nonprofit', 'ngo'] },
   { k: 'القطاع الحكومي', has: true, syn: ['حكومي', 'حكومية', 'government', 'public sector'] },
-  { k: 'الإنجليزية', has: true, syn: ['الإنجليزية', 'الانجليزية', 'english'] },
+  { k: 'إجادة الإنجليزية', has: false, syn: ['الإنجليزية', 'الانجليزية', 'english'] },
   { k: 'تقييم الأداء', has: false, syn: ['تقييم الأداء', 'إدارة الأداء', 'performance appraisal', 'performance management'] },
   { k: 'الرواتب والأجور', has: false, syn: ['رواتب', 'الرواتب', 'الأجور', 'مسير', 'payroll', 'compensation'] },
   { k: 'التدريب والتطوير', has: false, syn: ['التدريب والتطوير', 'تطوير الموظفين', 'training', 'learning and development', 'l&d'] },
