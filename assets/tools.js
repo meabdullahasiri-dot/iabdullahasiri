@@ -148,7 +148,7 @@ const esc = s => String(s || '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '
 const RELEVANT = /موارد بشري|الموارد البشري|شؤون الموظفين|الأفراد|التوظيف|استقطاب|مشاريع|مشروع|تطوير مؤسسي|التطوير المؤسسي|تميز مؤسسي|التميز المؤسسي|إدار|سياسات|إجراءات|حوكمة|جودة|عمليات|مكتب|human resources|\bhr\b|people|talent|recruit|personnel|employee relations|project|pmo|admin|office manager|organizational|institutional|excellence|governance|quality|polic|process|operations/i;
 // alert-email note lines that are not job details (also filtered in apps-script/Code.gs)
 const NOISE = /تقديم الطلب|تقوم بالتوظيف|توظف بنشاط|خريج|زملاء|مروّج|Easy Apply|actively (hiring|recruiting)|alumni|connection|Promoted/i;
-let jobs = [], filter = 'open';
+let jobs = [], filter = 'open', feedState = '';
 const applied = new Set(store.get('applied', []));
 
 function score(j) {
@@ -159,11 +159,12 @@ function score(j) {
 function render() {
   const list = $('jobList');
   const shown = jobs.filter(j => filter === 'all' || (filter === 'applied') === applied.has(j.id));
+  if (!jobs.length && feedState) { list.innerHTML = `<div class="card empty">${feedState}</div>`; return; }
   if (!jobs.length) {
     list.innerHTML = `<div class="card empty">لا توجد وظائف بعد.<br>بعد إعداد مصدر الوظائف (الخطوات في رسالة Claude)، ستظهر هنا تلقائياً من تنبيهات لينكدإن وجدارات.<br>وحتى ذلك الحين، الصق أي إعلان في قسم <a href="#apply"><b>تجهيز الطلب</b></a>.</div>`;
     return;
   }
-  if (!shown.length) { list.innerHTML = '<div class="card empty">لا توجد وظائف في هذا التصنيف.</div>'; return; }
+  if (!shown.length) { list.innerHTML = `<div class="card empty">لا توجد وظائف في هذا التصنيف${filter === 'open' ? ' (كل الوظائف معلَّمة "قدّمت"، اضغط "الكل" لعرضها)' : ''}.</div>`; return; }
   list.innerHTML = shown.map(j => {
     const cls = j.pct >= 70 ? 'hi' : j.pct >= 45 ? '' : 'lo';
     const meta = [j.company, j.location, j.source, j.date].filter(Boolean).map(esc).join(' · ');
@@ -268,7 +269,20 @@ if (!store.get('feedUrl', '')) $('settings').open = true;
 function load() {
   const url = store.get('feedUrl', '') || 'jobs.json';
   $('jobList').innerHTML = '<div class="card empty">جارٍ التحميل...</div>';
-  fetch(url, { cache: 'no-store' }).then(r => r.ok ? r.json() : []).catch(() => []).then(data => {
+  const saved = store.get('feedUrl', '');
+  feedState = '';
+  fetch(url, { cache: 'no-store' })
+    .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .catch(e => {
+      // say exactly why the list is empty, so the owner can fix the feed
+      feedState = saved
+        ? `تعذّر الاتصال بمصدر الوظائف (${esc(e.message)}).<br>افتح رابط المصدر في تبويب جديد: إن ظهرت رسالة خطأ أو طلب تسجيل دخول، فأعد نشر أداة Google بخيار "أي شخص".`
+        : '';
+      return [];
+    })
+    .then(data => {
+    if (saved && !feedState && Array.isArray(data) && !data.length)
+      feedState = 'مصدر الوظائف متصل ✅ لكنه لا يحتوي وظائف حالياً.<br>تُقرأ رسائل التنبيه من آخر 21 يوماً فقط. تأكد من وصول تنبيهات لينكدإن إلى بريدك، ثم شغّل <b>collectJobs</b> في أداة Google.';
     jobs = (Array.isArray(data) ? data : []).filter(j => j && j.title && !NOISE.test(j.title))
       .map(j => ({ ...j, location: NOISE.test(j.location || '') ? '' : j.location }))
       .map(j => ({ ...j, id: String(j.id || j.url || j.title), pct: score(j) }))
